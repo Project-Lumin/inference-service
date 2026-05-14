@@ -4,9 +4,16 @@ FROM python:3.10-slim
 # Set working directory
 WORKDIR /app
 
+
 # Copy requirements and install dependencies
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Install build tools for scikit-surprise
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends build-essential python3-dev \
+	&& pip install --no-cache-dir -r requirements.txt \
+	&& apt-get remove -y build-essential python3-dev \
+	&& apt-get autoremove -y \
+	&& rm -rf /var/lib/apt/lists/*
 
 
 # Copy the rest of the application code
