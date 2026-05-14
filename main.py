@@ -13,9 +13,10 @@ from flask import Flask, jsonify, request
 from service import VideoPayload, recommend_top_videos
 
 MODEL_PATH = Path(__file__).resolve().parent / "svd_full_model.pkl"
-PREFETCH_URL = "http://34.173.213.87:8000/v1/user/prefetched/videos"
+PREFETCH_URL = "http://35.188.92.251:8000/v1/user/prefetched/videos"
 
 app = Flask(__name__)
+
 
 
 def load_model(path: Path) -> Any:
@@ -126,3 +127,7 @@ def recommend() -> tuple[Any, int]:
         return notify_body, 502
 
     return notify_body, notify_status
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8888)

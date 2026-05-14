@@ -31,12 +31,15 @@ def _tokenize_metadata(video: VideoPayload) -> set[str]:
     return {tok for tok in combined.lower().split() if tok}
 
 
-def _jaccard_similarity(tokens_a: set[str], tokens_b: set[str]) -> float:
+
+def _cosine_similarity(tokens_a: set[str], tokens_b: set[str]) -> float:
     if not tokens_a or not tokens_b:
         return 0.0
     intersection = len(tokens_a & tokens_b)
-    union = len(tokens_a | tokens_b)
-    return intersection / union if union else 0.0
+    norm_a = len(tokens_a) ** 0.5
+    norm_b = len(tokens_b) ** 0.5
+    denominator = norm_a * norm_b
+    return intersection / denominator if denominator else 0.0
 
 
 def recommend_top_videos(
@@ -93,7 +96,7 @@ def recommend_top_videos(
         tokens = _tokenize_metadata(video)
         if not tokens:
             return 0.0
-        sims = [_jaccard_similarity(tokens, wt) for wt in watched_tokens if wt]
+        sims = [_cosine_similarity(tokens, wt) for wt in watched_tokens if wt]
         return sum(sims) / len(sims) if sims else 0.0
 
     reranked = sorted(prefiltered, key=video_similarity, reverse=True)
